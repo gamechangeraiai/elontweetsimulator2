@@ -1,9 +1,9 @@
 
-import React, { useState, useMemo } from 'react';
-import { 
-  LayoutDashboard, 
-  Calculator, 
-  TrendingUp, 
+import React, { useState, useMemo, useEffect } from 'react';
+import {
+  LayoutDashboard,
+  Calculator,
+  TrendingUp,
   Twitter,
   ChevronRight
 } from 'lucide-react';
@@ -25,22 +25,38 @@ const createEmptyTradingBlock = (title: string): TradingBlockData => ({
   activities: Array(10).fill(null).map(() => ({ activity: '', share: 0, cost: 0, sold: 0, netPnl: 0 }))
 });
 
+const STORAGE_KEY = 'elon_tracker_state';
+
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'calculation' | 'trading'>('dashboard');
-  
-  const [state, setState] = useState<GlobalState>({
-    totalTweet: 0,
-    average: 0,
-    elapsed: 0,
-    remainingDays: 0,
-    remainingHours: 0,
-    calculationRows: Array(15).fill(null).map(() => ({ avgDailyTweet: 0, forecastRange: 0, group: '', mark: '' })),
-    tradingBlocks: [
-      createEmptyTradingBlock("Day 1"),
-      createEmptyTradingBlock("Day 2"),
-      createEmptyTradingBlock("Day 3")
-    ]
+
+  const [state, setState] = useState<GlobalState>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse saved state:", e);
+      }
+    }
+    return {
+      totalTweet: 0,
+      average: 0,
+      elapsed: 0,
+      remainingDays: 0,
+      remainingHours: 0,
+      calculationRows: Array(15).fill(null).map(() => ({ avgDailyTweet: 0, forecastRange: 0, group: '', mark: '' })),
+      tradingBlocks: [
+        createEmptyTradingBlock("Day 1"),
+        createEmptyTradingBlock("Day 2"),
+        createEmptyTradingBlock("Day 3")
+      ]
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }, [state]);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -63,7 +79,7 @@ const App: React.FC = () => {
               </div>
               <span className="font-bold text-slate-800 text-lg tracking-tight">ELON TRACKER</span>
             </div>
-            
+
             <nav className="flex space-x-1">
               {[
                 { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -73,11 +89,10 @@ const App: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setCurrentPage(tab.id as any)}
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
-                    currentPage === tab.id 
-                    ? 'bg-blue-50 text-blue-600 shadow-sm' 
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all ${currentPage === tab.id
+                    ? 'bg-blue-50 text-blue-600 shadow-sm'
                     : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
-                  }`}
+                    }`}
                 >
                   <tab.icon size={18} />
                   {tab.label}
