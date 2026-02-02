@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Calculator,
   TrendingUp,
-  Twitter,
   ChevronRight
 } from 'lucide-react';
 import DashboardPage from './pages/DashboardPage';
@@ -74,9 +73,6 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-2">
-              <div className="bg-[#1DA1F2] p-1.5 rounded-lg text-white">
-                <Twitter size={20} fill="currentColor" />
-              </div>
               <span className="font-bold text-slate-800 text-lg tracking-tight">ELON TRACKER</span>
             </div>
 
@@ -115,9 +111,16 @@ const App: React.FC = () => {
       </main>
 
       <footer className="bg-white border-t border-slate-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-          <span>Elon Tweet Timeframe v3.0</span>
-          <span>© 2024 Financial Tracker Solutions</span>
+        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center text-[10px] text-slate-400 font-bold tracking-widest">
+          <span className="uppercase">NFA / DYOR ไม่ได้ชี้นำการลงทุนใดๆทั้งสิ้น เป็นแค่เครื่องมือในการคำนวนปริมานการ post เท่านั้น</span>
+          <a
+            href="https://x.com/gKukkui"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-blue-600 transition-all bg-slate-100 px-3 py-1 rounded-full border border-slate-200 uppercase"
+          >
+            VIBE By KuKKui
+          </a>
         </div>
       </footer>
     </div>
