@@ -10,6 +10,7 @@ import {
   Sun
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
 import DashboardPage from './pages/DashboardPage';
 import CalculationPage from './pages/CalculationPage';
 import TradingPage from './pages/TradingPage';
@@ -170,6 +171,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </footer>
+      <Analytics />
     </div>
   );
 };
