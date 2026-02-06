@@ -37,10 +37,10 @@ const TradingPage: React.FC<{ state: GlobalState, setState: React.Dispatch<React
   return (
     <div className="space-y-12">
       <header>
-        <h1 className="text-4xl font-black tracking-tight text-slate-900">
+        <h1 className="text-4xl font-black tracking-tight text-slate-950">
           Simulation <span className="text-blue-600">Workspace</span>
         </h1>
-        <p className="text-slate-500 font-medium mt-2">Manage trading blocks and activities with granular control.</p>
+        <p className="text-slate-600 font-medium mt-2">Manage trading blocks and activities with granular control.</p>
       </header>
 
       <div className="space-y-16">
@@ -94,7 +94,7 @@ const TradingPage: React.FC<{ state: GlobalState, setState: React.Dispatch<React
                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full">Primary Matrix</span>
                     </div>
 
-                    <div className="bg-slate-50/50 rounded-3xl border border-slate-100 overflow-hidden">
+                    <div className="bg-slate-50/50 rounded-3xl border border-slate-100 overflow-y-auto max-h-[600px] scrollbar-thin scrollbar-thumb-slate-200">
                       <table className="w-full text-xs">
                         <thead className="bg-white/50 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
                           <tr>
@@ -139,7 +139,7 @@ const TradingPage: React.FC<{ state: GlobalState, setState: React.Dispatch<React
                       </div>
                     </div>
 
-                    <div className="bg-slate-50/50 rounded-3xl border border-slate-100 overflow-hidden">
+                    <div className="bg-slate-50/50 rounded-3xl border border-slate-100 overflow-y-auto max-h-[600px] scrollbar-thin scrollbar-thumb-slate-200">
                       <table className="w-full text-xs text-center">
                         <thead className="bg-white/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                           <tr>
@@ -182,7 +182,7 @@ const TradingPage: React.FC<{ state: GlobalState, setState: React.Dispatch<React
 
 const SummaryBadge: React.FC<{ label: string, value: string, color: string, trend?: boolean }> = ({ label, value, color, trend }) => (
   <div className={`${color} px-6 py-3 rounded-2xl text-white shadow-lg flex flex-col min-w-[120px]`}>
-    <span className="text-[9px] font-black uppercase opacity-60 tracking-widest">{label}</span>
+    <span className="text-[9px] font-black uppercase text-slate-300 tracking-widest">{label}</span>
     <div className="flex items-center justify-between gap-2 mt-1">
       <span className="font-black text-lg tracking-tighter">{value}</span>
       {trend && <TrendingUp size={14} className="opacity-50" />}

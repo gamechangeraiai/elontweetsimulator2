@@ -16,16 +16,16 @@ import TradingPage from './pages/TradingPage';
 import { GlobalState, TradingBlockData } from './types';
 
 const INITIAL_RANGES = [
-  "280 - 299", "300 - 319", "320 - 339", "340 - 359", "360 - 379",
+  "240 - 259", "260 - 279", "280 - 299", "300 - 319", "320 - 339", "340 - 359", "360 - 379",
   "380 - 399", "400 - 419", "420 - 439", "440 - 459", "460 - 479",
-  "480 - 499", "500 - 519", "520 - 539", "540 - 559"
+  "480 - 499", "500 - 519", "520 - 539", "540 - 559", "560 - 579", "580 - 599", "600 - 619", "620 - 639"
 ];
 
 const createEmptyTradingBlock = (title: string): TradingBlockData => ({
   title,
   currentPrice: 420,
   priceRanges: INITIAL_RANGES.map(range => ({ range, shares: 0, cost: 0, pnl: 0 })),
-  activities: Array(10).fill(null).map(() => ({ activity: '', share: 0, cost: 0, sold: 0, netPnl: 0 }))
+  activities: Array(20).fill(null).map(() => ({ activity: '', share: 0, cost: 0, sold: 0, netPnl: 0 }))
 });
 
 const STORAGE_KEY = 'elon_tracker_state';
@@ -36,26 +36,56 @@ const App: React.FC = () => {
 
   const [state, setState] = useState<GlobalState>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse saved state:", e);
-      }
-    }
-    return {
+    const defaultState: GlobalState = {
       totalTweet: 0,
       average: 0,
       elapsed: 0,
       remainingDays: 0,
       remainingHours: 0,
-      calculationRows: Array(15).fill(null).map(() => ({ avgDailyTweet: 0, forecastRange: 0, group: '', mark: '' })),
+      calculationRows: Array(20).fill(null).map(() => ({ avgDailyTweet: 0, forecastRange: 0, group: '', mark: '' })),
       tradingBlocks: [
         createEmptyTradingBlock("Day 1"),
         createEmptyTradingBlock("Day 2"),
         createEmptyTradingBlock("Day 3")
       ]
     };
+
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+
+        // Migration: Calculation Rows
+        if (parsed.calculationRows && parsed.calculationRows.length < 20) {
+          const extra = Array(20 - parsed.calculationRows.length).fill(null).map(() => ({ avgDailyTweet: 0, forecastRange: 0, group: '', mark: '' }));
+          parsed.calculationRows = [...parsed.calculationRows, ...extra];
+        }
+
+        // Migration: Trading Blocks (Activities and Ranges)
+        if (parsed.tradingBlocks) {
+          parsed.tradingBlocks = parsed.tradingBlocks.map((block: TradingBlockData) => {
+            // Activities
+            if (block.activities && block.activities.length < 20) {
+              const extraAct = Array(20 - block.activities.length).fill(null).map(() => ({ activity: '', share: 0, cost: 0, sold: 0, netPnl: 0 }));
+              block.activities = [...block.activities, ...extraAct];
+            }
+            // Price Ranges (ensure all INITIAL_RANGES are present)
+            const currentRanges = block.priceRanges.map(r => r.range);
+            const needsUpdate = INITIAL_RANGES.some(r => !currentRanges.includes(r));
+            if (needsUpdate) {
+              block.priceRanges = INITIAL_RANGES.map(rangeStr => {
+                const existing = block.priceRanges.find(r => r.range === rangeStr);
+                return existing || { range: rangeStr, shares: 0, cost: 0, pnl: 0 };
+              });
+            }
+            return block;
+          });
+        }
+        return parsed;
+      } catch (e) {
+        console.error("Failed to parse saved state:", e);
+      }
+    }
+    return defaultState;
   });
 
   useEffect(() => {
@@ -79,7 +109,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDarkMode ? 'bg-[#0f172a] text-slate-100' : 'bg-[#f8fafc] text-slate-900'} font-sans`}>
+    <div className={`min-h-screen transition-colors duration-500 ${isDarkMode ? 'bg-[#0f172a] text-slate-100' : 'bg-slate-100 text-slate-950'} font-sans`}>
       {/* Premium Navigation */}
       <header className={`sticky top-0 z-50 backdrop-blur-md border-b ${isDarkMode ? 'bg-slate-900/50 border-white/10' : 'bg-white/70 border-slate-200'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -103,8 +133,8 @@ const App: React.FC = () => {
                   key={tab.id}
                   onClick={() => setCurrentPage(tab.id as any)}
                   className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 ${currentPage === tab.id
-                      ? 'bg-white text-blue-600 shadow-md scale-105'
-                      : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-white text-blue-600 shadow-md scale-105'
+                    : 'text-slate-500 hover:text-slate-700'
                     }`}
                 >
                   <tab.icon size={18} />

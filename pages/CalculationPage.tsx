@@ -30,10 +30,10 @@ const CalculationPage: React.FC<{ state: GlobalState, setState: React.Dispatch<R
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="text-4xl font-black tracking-tight text-slate-900">
+        <h1 className="text-4xl font-black tracking-tight text-slate-950">
           Forecasting <span className="text-blue-600">Engine</span>
         </h1>
-        <p className="text-slate-500 font-medium mt-2">Adjust variables and simulate future tweet volume outcomes.</p>
+        <p className="text-slate-600 font-medium mt-2">Adjust variables and simulate future tweet volume outcomes.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -112,81 +112,88 @@ const CalculationPage: React.FC<{ state: GlobalState, setState: React.Dispatch<R
           </section>
         </div>
 
-        {/* Results Table */}
-        <div className="lg:col-span-8 bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
-          <div className="bg-slate-50/50 p-8 border-b border-slate-100 flex items-center justify-between">
-            <h3 className="font-black text-slate-800 flex items-center gap-2">
-              <Target size={20} className="text-blue-600" />
-              Forecast Projections
-            </h3>
-            <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 bg-white px-3 py-1.5 rounded-full border border-slate-200">
-              <Info size={12} />
-              AUTO-CALCULATION ENABLED
+        {/* Results Tables */}
+        <div className="lg:col-span-8 space-y-8">
+          {[0, 10].map((startIndex) => (
+            <div key={startIndex} className="bg-white rounded-[2.5rem] border border-slate-200 shadow-md overflow-hidden">
+              <div className="bg-slate-50/50 p-6 border-b border-slate-100 flex items-center justify-between">
+                <h3 className="font-black text-slate-900 flex items-center gap-2">
+                  <Target size={18} className="text-blue-600" />
+                  Forecast Set {startIndex === 0 ? 'A' : 'B'}
+                </h3>
+                {startIndex === 0 && (
+                  <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 bg-white px-3 py-1 rounded-full border border-slate-200">
+                    <Info size={10} />
+                    AUTO-CALCULATION ENABLED
+                  </div>
+                )}
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-50/30 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                    <tr>
+                      <th className="px-6 py-4">Daily Avg</th>
+                      <th className="px-6 py-4">Forecast Range</th>
+                      <th className="px-6 py-4">Group</th>
+                      <th className="px-6 py-4">Mark</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {state.calculationRows.slice(startIndex, startIndex + 10).map((row, relativeIdx) => {
+                      const idx = startIndex + relativeIdx;
+                      let baseAvg = row.avgDailyTweet;
+                      let isLinked = false;
+                      let label = "";
+                      let rowContext = "";
+
+                      if (idx === 5) { baseAvg = state.average - 4; isLinked = true; label = "-4"; rowContext = "bg-blue-50/30"; }
+                      else if (idx === 6) { baseAvg = state.average - 2; isLinked = true; label = "-2"; rowContext = "bg-blue-50/30"; }
+                      else if (idx === 7) { baseAvg = state.average; isLinked = true; label = "AVG"; rowContext = "bg-blue-100/50"; }
+                      else if (idx === 8) { baseAvg = state.average + 2; isLinked = true; label = "+2"; rowContext = "bg-blue-50/30"; }
+                      else if (idx === 9) { baseAvg = state.average + 4; isLinked = true; label = "+4"; rowContext = "bg-blue-50/30"; }
+
+                      const effectiveAvg = baseAvg + sensitivity;
+                      const forecast = calculateForecastRange(effectiveAvg, state.remainingDays, state.remainingHours, state.totalTweet);
+
+                      return (
+                        <motion.tr
+                          key={idx}
+                          layout
+                          className={`transition-colors duration-300 ${rowContext} hover:bg-slate-50`}
+                        >
+                          <td className="p-3 px-6">
+                            {isLinked ? (
+                              <div className="flex flex-col items-center">
+                                <span className="font-black text-blue-600 text-lg">{effectiveAvg}</span>
+                                <span className="text-[10px] font-black text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200 mt-1 uppercase">{label}</span>
+                              </div>
+                            ) : (
+                              <input
+                                type="number"
+                                className="w-full bg-white border border-slate-200 rounded-xl px-2 py-3 font-bold text-slate-950 focus:ring-2 focus:ring-blue-400 outline-none text-center shadow-sm"
+                                value={row.avgDailyTweet || ''}
+                                onChange={(e) => handleRowInput(idx, 'avgDailyTweet', Number(e.target.value))}
+                              />
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span className="font-mono font-black text-xl text-slate-900">{Math.round(forecast).toLocaleString()}</span>
+                          </td>
+                          <td className="p-3 px-6">
+                            <input className="w-full text-center border border-slate-200 bg-white rounded-xl py-3 font-bold text-slate-800 focus:ring-2 focus:ring-blue-400 outline-none shadow-sm" value={row.group} onChange={(e) => handleRowInput(idx, 'group', e.target.value)} />
+                          </td>
+                          <td className="p-3 px-6">
+                            <input className="w-full text-center border border-slate-200 bg-white rounded-xl py-3 font-bold text-slate-800 focus:ring-2 focus:ring-blue-400 outline-none shadow-sm" value={row.mark} onChange={(e) => handleRowInput(idx, 'mark', e.target.value)} />
+                          </td>
+                        </motion.tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead className="bg-slate-50/30 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
-                <tr>
-                  <th className="px-6 py-4">Daily Avg</th>
-                  <th className="px-6 py-4">Forecast Range</th>
-                  <th className="px-6 py-4">Group</th>
-                  <th className="px-6 py-4">Mark</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {state.calculationRows.map((row, idx) => {
-                  let baseAvg = row.avgDailyTweet;
-                  let isLinked = false;
-                  let label = "";
-                  let rowContext = "";
-
-                  if (idx === 5) { baseAvg = state.average - 4; isLinked = true; label = "-4"; rowContext = "bg-blue-50/30"; }
-                  else if (idx === 6) { baseAvg = state.average - 2; isLinked = true; label = "-2"; rowContext = "bg-blue-50/30"; }
-                  else if (idx === 7) { baseAvg = state.average; isLinked = true; label = "AVG"; rowContext = "bg-blue-100/50"; }
-                  else if (idx === 8) { baseAvg = state.average + 2; isLinked = true; label = "+2"; rowContext = "bg-blue-50/30"; }
-                  else if (idx === 9) { baseAvg = state.average + 4; isLinked = true; label = "+4"; rowContext = "bg-blue-50/30"; }
-
-                  const effectiveAvg = baseAvg + sensitivity;
-                  const forecast = calculateForecastRange(effectiveAvg, state.remainingDays, state.remainingHours, state.totalTweet);
-
-                  return (
-                    <motion.tr
-                      key={idx}
-                      layout
-                      className={`transition-colors duration-300 ${rowContext} hover:bg-slate-50`}
-                    >
-                      <td className="p-3 px-6">
-                        {isLinked ? (
-                          <div className="flex flex-col items-center">
-                            <span className="font-black text-blue-600 text-lg">{effectiveAvg}</span>
-                            <span className="text-[10px] font-black text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200 mt-1 uppercase">{label}</span>
-                          </div>
-                        ) : (
-                          <input
-                            type="number"
-                            className="w-full bg-white border border-slate-200 rounded-xl px-2 py-3 font-bold text-slate-900 focus:ring-2 focus:ring-blue-400 outline-none text-center shadow-sm"
-                            value={row.avgDailyTweet || ''}
-                            onChange={(e) => handleRowInput(idx, 'avgDailyTweet', Number(e.target.value))}
-                          />
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className="font-mono font-black text-xl text-slate-900">{Math.round(forecast).toLocaleString()}</span>
-                      </td>
-                      <td className="p-3 px-6">
-                        <input className="w-full text-center border border-slate-200 bg-white rounded-xl py-3 font-bold text-slate-700 focus:ring-2 focus:ring-blue-400 outline-none shadow-sm" value={row.group} onChange={(e) => handleRowInput(idx, 'group', e.target.value)} />
-                      </td>
-                      <td className="p-3 px-6">
-                        <input className="w-full text-center border border-slate-200 bg-white rounded-xl py-3 font-bold text-slate-700 focus:ring-2 focus:ring-blue-400 outline-none shadow-sm" value={row.mark} onChange={(e) => handleRowInput(idx, 'mark', e.target.value)} />
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          ))}
         </div>
       </div>
     </div>
@@ -195,7 +202,7 @@ const CalculationPage: React.FC<{ state: GlobalState, setState: React.Dispatch<R
 
 const InputGroup: React.FC<{ label: string, value: number, onChange: (val: number) => void, small?: boolean, icon?: React.ReactNode }> = ({ label, value, onChange, small, icon }) => (
   <div className="space-y-2">
-    <label className={`text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1`}>
+    <label className={`text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1`}>
       {icon}
       {label}
     </label>
