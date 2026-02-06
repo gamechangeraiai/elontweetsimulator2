@@ -65,10 +65,10 @@ const DashboardPage: React.FC<{ state: GlobalState }> = ({ state }) => {
     <div className="space-y-10">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-950 leading-tight">
-            Portfolio <span className="text-blue-600">Intelligence</span>
+          <h1 className="text-4xl font-black tracking-tight text-slate-950 dark:text-white leading-tight">
+            Portfolio <span className="text-blue-600 dark:text-blue-400">Intelligence</span>
           </h1>
-          <p className="text-slate-600 font-medium mt-2">Advanced simulation analytics and performance tracking.</p>
+          <p className="text-slate-600 dark:text-slate-400 font-medium mt-2">Advanced simulation analytics and performance tracking.</p>
         </div>
         <div className="flex gap-3">
           <div className="bg-white/50 backdrop-blur-xl border border-slate-200 p-4 rounded-3xl shadow-sm">
@@ -110,7 +110,7 @@ const DashboardPage: React.FC<{ state: GlobalState }> = ({ state }) => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-8 bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-md relative overflow-hidden">
+        <div className="lg:col-span-8 bg-white dark:bg-slate-900/50 p-8 rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-md relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
           <h3 className="text-lg font-black text-slate-800 mb-8 flex items-center gap-2">
             <Layers size={20} className="text-blue-600" />
@@ -136,7 +136,7 @@ const DashboardPage: React.FC<{ state: GlobalState }> = ({ state }) => {
           </div>
         </div>
 
-        <div className="lg:col-span-4 bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-md">
+        <div className="lg:col-span-4 bg-white dark:bg-slate-900/50 p-8 rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-md">
           <h3 className="text-lg font-black text-slate-800 mb-8 flex items-center gap-2">
             <PieIcon size={20} className="text-indigo-600" />
             Allocation
@@ -165,9 +165,9 @@ const DashboardPage: React.FC<{ state: GlobalState }> = ({ state }) => {
       </div>
 
       {/* Session Table */}
-      <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-md">
-        <div className="bg-slate-50/50 px-8 py-6 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="font-black text-slate-950 tracking-tight">Session Breakdown</h3>
+      <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-md">
+        <div className="bg-slate-50/50 dark:bg-slate-900/30 px-8 py-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+          <h3 className="font-black text-slate-950 dark:text-white tracking-tight">Session Breakdown</h3>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Data Stream</span>
@@ -189,11 +189,11 @@ const DashboardPage: React.FC<{ state: GlobalState }> = ({ state }) => {
                   <td className="px-8 py-6">
                     <div className="font-black text-slate-800 group-hover:text-blue-600 transition-colors uppercase tracking-tight">{session.name}</div>
                   </td>
-                  <td className="px-8 py-6 text-center font-mono font-bold text-slate-500">{format(session.cost)}</td>
+                  <td className="px-8 py-6 text-center font-mono font-bold text-slate-500 dark:text-slate-400">{format(session.cost)}</td>
                   <td className={`px-8 py-6 text-center font-mono font-black ${session.activityPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                     {session.activityPnl >= 0 ? '+' : ''}{format(session.activityPnl)}
                   </td>
-                  <td className={`px-8 py-6 text-right font-mono font-black ${session.pnl >= 0 ? 'text-slate-900' : 'text-rose-600'}`}>
+                  <td className={`px-8 py-6 text-right font-mono font-black ${session.pnl >= 0 ? 'text-slate-900 dark:text-slate-100' : 'text-rose-600'}`}>
                     <div className="flex items-center justify-end gap-2">
                       {format(session.pnl)}
                       {session.pnl >= 0 ? <TrendingUp size={14} className="text-emerald-500" /> : <TrendingDown size={14} className="text-rose-500" />}

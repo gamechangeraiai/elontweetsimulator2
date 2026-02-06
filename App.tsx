@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import DashboardPage from './pages/DashboardPage';
 import CalculationPage from './pages/CalculationPage';
 import TradingPage from './pages/TradingPage';
-import { GlobalState, TradingBlockData } from './types';
+import { GlobalState, TradingBlockData, ForecastInputs } from './types';
 
 const INITIAL_RANGES = [
   "240 - 259", "260 - 279", "280 - 299", "300 - 319", "320 - 339", "340 - 359", "360 - 379",
@@ -36,12 +36,18 @@ const App: React.FC = () => {
 
   const [state, setState] = useState<GlobalState>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    const defaultState: GlobalState = {
+    const defaultInputs: ForecastInputs = {
       totalTweet: 0,
       average: 0,
       elapsed: 0,
       remainingDays: 0,
       remainingHours: 0,
+      sensitivity: 0
+    };
+
+    const defaultState: GlobalState = {
+      inputsA: { ...defaultInputs },
+      inputsB: { ...defaultInputs },
       calculationRows: Array(20).fill(null).map(() => ({ avgDailyTweet: 0, forecastRange: 0, group: '', mark: '' })),
       tradingBlocks: [
         createEmptyTradingBlock("Day 1"),
@@ -58,6 +64,21 @@ const App: React.FC = () => {
         if (parsed.calculationRows && parsed.calculationRows.length < 20) {
           const extra = Array(20 - parsed.calculationRows.length).fill(null).map(() => ({ avgDailyTweet: 0, forecastRange: 0, group: '', mark: '' }));
           parsed.calculationRows = [...parsed.calculationRows, ...extra];
+        }
+
+        // New Migration to inputsA and inputsB
+        if (!parsed.inputsA) {
+          parsed.inputsA = {
+            totalTweet: parsed.totalTweet ?? 0,
+            average: parsed.average ?? 0,
+            elapsed: parsed.elapsed ?? 0,
+            remainingDays: parsed.remainingDays ?? 0,
+            remainingHours: parsed.remainingHours ?? 0,
+            sensitivity: 0
+          };
+        }
+        if (!parsed.inputsB) {
+          parsed.inputsB = { ...parsed.inputsA }; // Start with same values
         }
 
         // Migration: Trading Blocks (Activities and Ranges)
@@ -111,7 +132,7 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDarkMode ? 'bg-[#0f172a] text-slate-100' : 'bg-slate-100 text-slate-950'} font-sans`}>
       {/* Premium Navigation */}
-      <header className={`sticky top-0 z-50 backdrop-blur-md border-b ${isDarkMode ? 'bg-slate-900/50 border-white/10' : 'bg-white/70 border-slate-200'}`}>
+      <header className={`sticky top-0 z-50 backdrop-blur-md border-b ${isDarkMode ? 'bg-slate-900/80 border-white/10' : 'bg-white/70 border-slate-200'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             <div className="flex items-center gap-3">
@@ -119,7 +140,7 @@ const App: React.FC = () => {
                 <TrendingUp size={24} className="text-white" />
               </div>
               <span className="font-black text-xl tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                ELON TRACKER
+                X TRACKER
               </span>
             </div>
 

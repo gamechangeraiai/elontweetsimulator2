@@ -28,14 +28,26 @@ export interface TradingBlockData {
   currentPrice: number;
 }
 
-export interface GlobalState {
+export interface ForecastInputs {
   totalTweet: number;
   average: number;
   elapsed: number;
   remainingDays: number;
   remainingHours: number;
+  sensitivity: number;
+}
+
+export interface GlobalState {
+  inputsA: ForecastInputs;
+  inputsB: ForecastInputs;
   calculationRows: CalculationRow[];
   tradingBlocks: TradingBlockData[];
+  // Legacy fields for migration
+  totalTweet?: number;
+  average?: number;
+  elapsed?: number;
+  remainingDays?: number;
+  remainingHours?: number;
 }
 
 // Added missing interfaces for amortization calculations
